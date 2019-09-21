@@ -66,7 +66,6 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
 
 router.post('/api/v1/product', (httprequest, httpresponse) => {
   let paramBody = httprequest.body;
-  console.log(httprequest);
   pool.connect().then(client => {
     client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli") values ($1,$2,$3,$4,$5,$6,$7)',
     [paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli])
