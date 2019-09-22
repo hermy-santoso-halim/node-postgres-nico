@@ -70,6 +70,12 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
     client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli") values ($1,$2,$3,$4,$5,$6,$7)',
     [paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli])
     .then(result => {
+        if (paramBody.settle){
+            //masuk transaction
+        } else{
+            // masuk pending transaction
+            
+        }
       httpresponse.status(200);
       httpresponse.json({success:true});
     })
