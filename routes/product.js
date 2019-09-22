@@ -81,7 +81,7 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
                     }
                     client.query('insert into pending_transaksi ("tgl","jmlh", "keterangan") values ($1,$2,$3)',
                         [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan])
-                        .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx') });
+                        .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
                 httpresponse.status(200);
                 httpresponse.json({ success: true });
