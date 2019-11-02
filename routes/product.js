@@ -9,6 +9,7 @@ const pool = new Pool({
     database: 'dbq8hmkuq8ait0',
     password: '4428eb4b0ba9ba0568cbf95bdbcf247fc186f3ad81cfdced2685daa09ba9e46d',
     port: 5432,
+    ssl: true
 })
 
 router.use(cors({
