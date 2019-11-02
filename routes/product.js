@@ -16,6 +16,11 @@ router.use(cors({
     origin: '*'
 }));
 
+router.get('/echo', (httprequest, httpresponse) => {
+    httpresponse.status(200);
+    httpresponse.json({ success: true });
+})
+
 router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
     const results = [];
     let paramBody = httprequest.params;
