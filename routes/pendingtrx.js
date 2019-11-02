@@ -17,7 +17,7 @@ router.use(cors({
 }));
 
 router.get('/echo', (httprequest, httpresponse) => {
-    httpresponse.status(200);
+    httpresponse.status(300);
     httpresponse.json({ success: true });
 })
 
