@@ -21,4 +21,27 @@ router.get('/echo', (httprequest, httpresponse) => {
     httpresponse.json({ success: true });
 })
 
+router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) => {
+    const results = [];
+    let paramBody = httprequest.params;
+    let offset = (parseInt(paramBody.page) - 1) * parseInt(paramBody.pageLimit);
+    pool.connect().then(client => {
+        client.query('SELECT * FROM pending_transaksi ORDER BY plat ASC LIMIT '.concat(paramBody.pageLimit).concat(' OFFSET ').concat(offset))
+            .then(result => {
+                if (result.rowCount > 0) {
+                    result.rows.forEach(element => {
+                        results.push(element);
+                    });
+                }
+                httpresponse.setHeader('Content-Type', 'application/json');
+                httpresponse.json(results);
+                client.release();
+            })
+            .catch(err => {
+                client.release();
+                console.log(err.stack)
+            });
+    });
+});
+
 module.exports = router;
