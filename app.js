@@ -1,6 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 3001;
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -26,8 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/product', productRouter);
-app.use('/pendingtrx', pendingtrxRouter);
+// app.use('/product', productRouter);
+// app.use('/pendingtrx', pendingtrxRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

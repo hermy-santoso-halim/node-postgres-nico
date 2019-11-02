@@ -15,12 +15,6 @@ router.use(cors({
     origin: '*'
 }));
 
-/* GET home page. */
-router.get('/', function (req, res, next) {
-    res.render('index', { title: 'Express' });
-    next();
-});
-
 router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
     const results = [];
     let paramBody = httprequest.params;
