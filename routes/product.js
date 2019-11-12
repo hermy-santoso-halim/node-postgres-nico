@@ -40,6 +40,7 @@ router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
             .catch(err => {
                 client.release();
                 console.log(err.stack)
+                console.log();
             });
     });
 });
