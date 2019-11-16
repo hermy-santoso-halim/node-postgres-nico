@@ -1,7 +1,8 @@
 var express = require('express');
 var cors = require('cors');
 var router = express.Router();
-const { Pool } = require('pg')
+const { Pool } = require('pg');
+var session = require('express-session');
 
 const pool = new Pool({
     user: 'pczkdkvxgizjtj',
@@ -14,6 +15,11 @@ const pool = new Pool({
 
 router.use(cors({
     origin: '*'
+}));
+router.use(session({
+	secret: 'secret',
+	resave: true,
+	saveUninitialized: true
 }));
 
 router.get('/echo', (httprequest, httpresponse) => {
@@ -45,5 +51,37 @@ router.get('/api/v1/akun/:userid/:password', (httprequest, httpresponse) => {
     });
 });
 
+router.post('/api/v1/akun/login', (httprequest, httpresponse) => {
+    console.log(httprequest.body);
+    var userid = httprequest.body.userid;
+	var password = httprequest.body.password;
+    console.log(userid);
+    console.log(password);
+    pool.connect().then(client => {
+       
+        if (userid && password){
+            
+            client.query('select * from akun where userid=$1 and password = $2',[userid, password] )
+                .then(result => {
+                if (result.rows.length > 0) {
+
+                    console.log(result.rows[0]);
+                    // console.log(result);
+                    httprequest.session.loggedin = true;
+                    httprequest.session.userid = userid;
+                    //httpresponse.redirect('/home');
+
+                    httpresponse.send("success login");
+                } else {
+                    httpresponse.send('Incorrect Username and/or Password!');
+                }			
+                httpresponse.end();
+            });
+        } else {
+		    httpresponse.send('Please enter Username and Password!');
+		    httpresponse.end();
+        }
+    });
+});
 
 module.exports= router;

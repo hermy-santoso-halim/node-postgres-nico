@@ -1,5 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
+var session = require('express-session');
+var bodyParser = require('body-parser');
 var port = process.env.PORT || 3001;
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -29,6 +31,13 @@ app.use('/users', usersRouter);
 app.use('/product', productRouter);
 app.use('/pendingtrx', pendingtrxRouter);
 app.use('/login', loginRouter);
+app.use(session({
+	secret: 'secret',
+	resave: true,
+	saveUninitialized: true
+}));
+app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json());
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
