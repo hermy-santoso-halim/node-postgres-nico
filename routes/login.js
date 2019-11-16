@@ -35,14 +35,14 @@ router.post('/api/v1/akun/login', (httprequest, httpresponse) => {
             client.query('select * from akun where userid=$1 and password = $2',[userid, password] )
                 .then(result => {
                 if (result.rows.length > 0) {
-                    httpresponse.json(result.rows[0]);
+                    httpresponse.json({statusCode: "00",data: result.rows[0]});
                 } else {
-                    httpresponse.json({message: "Incorrect Username/Password"});
+                    httpresponse.json({statusCode: "01",message: "Incorrect Username/Password"});
                 }
             });
         });
     } else {
-        httpresponse.json({message: "Please enter Username and Password!"});
+        httpresponse.json({statusCode: "01",message: "Please enter Username and Password!"});
     }
 });
 
