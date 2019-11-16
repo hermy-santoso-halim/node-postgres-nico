@@ -42,8 +42,8 @@ router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
 });
 
 router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
-    let paramBody = "%" + httprequest.params + "%";
-    console.log(paramBody);
+    let paramBody = httprequest.params;
+    console.log(paramBody.plat);
 
     pool.connect().then(client => {
         client.query('SELECT * FROM product where plat like $1', [paramBody.plat])
