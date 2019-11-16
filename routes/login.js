@@ -27,61 +27,23 @@ router.get('/echo', (httprequest, httpresponse) => {
     httpresponse.json({ success: true });
 })
 
-router.get('/api/v1/akun/:userid/:password', (httprequest, httpresponse) => {
-    const results = [];
-    let paramBody = httprequest.params;
-    
-    pool.connect().then(client => {
-        client.query('select * from akun where userid=$1 and password = $2',[paramBody.userid, paramBody.password])
-            .then(result => {
-                if (result.rowCount > 0) {
-                    result.rows.forEach(element => {
-                        results.push(element);
-                        console.log(element)
-                    });
-                }
-                httpresponse.setHeader('Content-Type', 'application/json');
-                httpresponse.json(results);
-                client.release();
-            })
-            .catch(err => {
-                client.release();
-                console.log(err.stack)
-            });
-    });
-});
-
 router.post('/api/v1/akun/login', (httprequest, httpresponse) => {
-    console.log(httprequest.body);
     var userid = httprequest.body.userid;
-	var password = httprequest.body.password;
-    console.log(userid);
-    console.log(password);
-    pool.connect().then(client => {
-       
-        if (userid && password){
-            
+    var password = httprequest.body.password;
+    if (userid && password){
+        pool.connect().then(client => {
             client.query('select * from akun where userid=$1 and password = $2',[userid, password] )
                 .then(result => {
                 if (result.rows.length > 0) {
-
-                    console.log(result.rows[0]);
-                    // console.log(result);
-                    httprequest.session.loggedin = true;
-                    httprequest.session.userid = userid;
-                    //httpresponse.redirect('/home');
-
-                    httpresponse.send("success login");
+                    httpresponse.json(result.rows[0]);
                 } else {
-                    httpresponse.send('Incorrect Username and/or Password!');
-                }			
-                httpresponse.end();
+                    httpresponse.json({message: "Incorrect Username/Password"});
+                }
             });
-        } else {
-		    httpresponse.send('Please enter Username and Password!');
-		    httpresponse.end();
-        }
-    });
+        });
+    } else {
+        httpresponse.json({message: "Please enter Username and Password!"});
+    }
 });
 
 module.exports= router;
