@@ -10,3 +10,5 @@ class product {
         this.tgl_beli = tgl_beli;
     }
 }
+
+module.exports = product;
