@@ -1,7 +1,8 @@
 var express = require('express');
 var cors = require('cors');
 var router = express.Router();
-const { Pool } = require('pg')
+var ProductModel = require('../models/product');
+const { Pool } = require('pg');
 
 const pool = new Pool({
     user: 'pczkdkvxgizjtj',
@@ -26,8 +27,9 @@ router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
         client.query('SELECT * FROM product ORDER BY plat ASC LIMIT '.concat(paramBody.pageLimit).concat(' OFFSET ').concat(offset))
             .then(result => {
                 if (result.rowCount > 0) {
-                    result.rows.forEach(element => {
-                        results.push(element);
+                    result.rows.forEach(ele => {
+                        let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli);
+                        results.push(product);
                     });
                 }
                 httpresponse.setHeader('Content-Type', 'application/json');
