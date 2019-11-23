@@ -28,7 +28,7 @@ router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(ele => {
-                        let product= new ProductModel.product(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli);
+                        let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli);
                         results.push(product);
                     });
                 }
