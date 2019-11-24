@@ -2,6 +2,8 @@ var express = require('express');
 var cors = require('cors');
 var router = express.Router();
 var ProductModel = require('../models/product');
+var PendingTransModel = require('../models/pending_transaksi');
+var TransModel = require('../models/transaksi');
 const { Pool } = require('pg');
 
 const pool = new Pool({
@@ -53,7 +55,9 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
             .then(result => {
                 if (result.rowCount > 0) {
                     httpresponse.setHeader('Content-Type', 'application/json');
-                    httpresponse.json(result.rows[0]);
+                    let ele = result.rows[0];
+                    let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli);
+                    httpresponse.json(product);
                 }
                 client.release();
             })
@@ -66,6 +70,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
 
 router.post('/api/v1/product', (httprequest, httpresponse) => {
     let paramBody = httprequest.body;
+
     pool.connect().then(client => {
         client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli") values ($1,$2,$3,$4,$5,$6,$7)',
             [paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli])
@@ -74,11 +79,10 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
                     //masuk transaction
                 } else {
                     // masuk pending transaction
-                    let pendingTransaction = {
-                        tgl: paramBody.tgl_beli,
-                        jmlh: paramBody.hrg_beli,
-                        keterangan: "PEMBELIAN MOTOR PLAT NO : ".concat(paramBody.plat).concat(" Tipe : ").concat(paramBody.tipe).concat(paramBody.merk)
-                    }
+                    let pendingTransaction = new PendingTransModel(paramBody.tgl_beli,
+                        paramBody.hrg_beli,
+                        "PEMBELIAN MOTOR PLAT NO : ".concat(paramBody.plat).concat("\nTipe : ").concat(paramBody.tipe).concat(" ").concat(paramBody.merk)
+                    );
                     client.query('insert into pending_transaksi ("tgl","jmlh", "keterangan") values ($1,$2,$3)',
                         [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });

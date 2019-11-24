@@ -7,3 +7,5 @@ class pending_transaksi {
         this.jmlh = jmlh;
     }
 }
+
+module.exports = pending_transaksi;

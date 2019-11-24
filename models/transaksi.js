@@ -7,3 +7,5 @@ class transaksi{
         this.jumlah = jumlah;
     }
 }
+
+module.exports = transaksi;
