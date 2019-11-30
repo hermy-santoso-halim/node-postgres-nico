@@ -56,7 +56,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                 if (result.rowCount > 0) {
                     httpresponse.setHeader('Content-Type', 'application/json');
                     let ele = result.rows[0];
-                    let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli);
+                    let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image);
                     httpresponse.json(product);
                 }
                 client.release();
