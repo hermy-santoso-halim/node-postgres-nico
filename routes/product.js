@@ -27,7 +27,7 @@ router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
     let offset = (parseInt(paramBody.page) - 1) * parseInt(paramBody.pageLimit);
     let totalData =0;
     pool.connect().then(client => {
-        client.query('SELECT count(plat) FROM product ORDER BY plat ASC LIMIT '.concat(paramBody.pageLimit).concat(' OFFSET ').concat(offset))
+        client.query('SELECT count(plat) FROM product')
             .then(result => {
                 console.log(result);
                 totalData = result;
