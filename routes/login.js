@@ -46,4 +46,33 @@ router.post('/api/v1/akun/login', (httprequest, httpresponse) => {
     }
 });
 
+router.post('/api/v1/akun/registrasi', (httprequest, httpresponse) => {
+    let paramBody = httprequest.body;
+    var date = new Date();
+    
+    pool.connect().then(client => {
+        client.query('SELECT * FROM akun where userid like $1', [paramBody.userid])
+            .then(result => {
+                console.log('test')
+                if (result.rowCount > 0) {
+                httpresponse.status(200);
+                httpresponse.json({ success: 'id exist'});
+                httpresponse.send();
+                } else{
+                    client.query('insert into akun ("userid","password", "no_tlp", "created_by", "created_date" ,"tipe_akses") values ($1,$2,$3,$4,$5,$6)',
+                    [paramBody.userid, paramBody.password, paramBody.no_tlp, paramBody.created_by, date, paramBody.tipe_akses])
+                    .then(result => { console.log('berhasil registrasi') 
+                    httpresponse.status(200);
+                    httpresponse.json({ success: true });
+                    httpresponse.send();
+                })
+                    .catch(err => {console.log('registrasi gagal'); console.log(err) 
+                    httpresponse.status(200);
+                    httpresponse.json({ success: true });
+                    httpresponse.send();
+                    });
+                };
+        });
+    });        
+});           
 module.exports= router;

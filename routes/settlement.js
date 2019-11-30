@@ -17,9 +17,10 @@ router.use(cors({
 
 router.post('/api/v1/settlement', (httprequest, httpresponse) => {
   let paramBody = httprequest.body;
+  var date = new Date();
   pool.connect().then(client => {
-    client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli") values ($1,$2,$3,$4,$5,$6,$7)',
-    [paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli])
+    client.query('insert into pending_transaksi ("id_pendingtrans","tgl", "keterangan", "jmlh") values ($1,$2,$3,$4)',
+    [paramBody.id_pendingtrans, date, paramBody.keterangan, paramBody.jmlh])
     .then(result => {
       httpresponse.status(200);
       httpresponse.json({success:true});
@@ -31,26 +32,6 @@ router.post('/api/v1/settlement', (httprequest, httpresponse) => {
     });
   });
   
-});
-
-
-router.post('/api/v1/pendingTransaction', (httprequest, httpresponse) => {
-  let paramBody = httprequest.body;
-
-  let paramBody = httprequest.body;
-  pool.connect().then(client => {
-    client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli") values ($1,$2,$3,$4,$5,$6,$7)',
-    [paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli])
-    .then(result => {
-      httpresponse.status(200);
-      httpresponse.json({success:true});
-    })
-    .catch(err => {
-      console.log(err.stack)
-      httpresponse.status(500);
-      httpresponse.json({success:false});
-    });
-  });
 });
 
 
