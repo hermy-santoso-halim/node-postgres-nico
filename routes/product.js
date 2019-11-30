@@ -29,8 +29,7 @@ router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
     pool.connect().then(client => {
         client.query('SELECT count(plat) FROM product')
             .then(result => {
-                console.log(result);
-                totalData = result;
+                totalData = result.rows[0].count;
             })
             .catch(err => {
                 console.log(err.stack)
@@ -44,8 +43,9 @@ router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
                         results.push(product);
                     });
                 }
+                let returnData ={totalCount:totalData,listData:results};
                 httpresponse.setHeader('Content-Type', 'application/json');
-                httpresponse.json(results);
+                httpresponse.json(returnData);
                 client.release();
             })
             .catch(err => {
