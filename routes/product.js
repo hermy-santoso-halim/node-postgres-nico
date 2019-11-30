@@ -70,10 +70,11 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
 
 router.post('/api/v1/product', (httprequest, httpresponse) => {
     let paramBody = httprequest.body;
+    let product = new ProductModel(paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli, paramBody.image);
 
     pool.connect().then(client => {
-        client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli") values ($1,$2,$3,$4,$5,$6,$7)',
-            [paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli])
+        client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli","image") values ($1,$2,$3,$4,$5,$6,$7,$8)',
+            [product.plat, product.merk, product.tipe, product.tahun, product.pajak, product.hrg_beli, product.tgl_beli,product.image])
             .then(result => {
                 if (paramBody.settle) {
                     //masuk transaction
