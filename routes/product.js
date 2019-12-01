@@ -38,6 +38,7 @@ router.post('/api/v1/products', (httprequest, httpresponse) => {
     let pageLimit = paramBody.pageLimit;
     let totalData =0;
     let platNo =paramBody.platNo.concat("%");
+    console.log(paramBody);
     pool.connect().then(client => {
         client.query('SELECT count(plat) FROM product')
             .then(result => {
