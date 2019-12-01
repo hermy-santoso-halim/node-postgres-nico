@@ -31,9 +31,9 @@ router.use(cors({
 
 
 
-router.get('/api/v1/products/:page/:pageLimit/:platNo', (httprequest, httpresponse) => {
+router.post('/api/v1/products', (httprequest, httpresponse) => {
     const results = [];
-    let paramBody = httprequest.params;
+    let paramBody = httprequest.body;
     let offset = (parseInt(paramBody.page) - 1) * parseInt(paramBody.pageLimit);
     let pageLimit = paramBody.pageLimit;
     let totalData =0;
