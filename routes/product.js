@@ -31,21 +31,26 @@ router.use(cors({
 
 
 
-router.get('/api/v1/products/:page/:pageLimit', (httprequest, httpresponse) => {
+router.get('/api/v1/products/:page/:pageLimit/:platNo', (httprequest, httpresponse) => {
     const results = [];
     let paramBody = httprequest.params;
     let offset = (parseInt(paramBody.page) - 1) * parseInt(paramBody.pageLimit);
+    let pageLimit = paramBody.pageLimit;
     let totalData =0;
+    let platNo =paramBody.platNo.concat("%");
     pool.connect().then(client => {
         client.query('SELECT count(plat) FROM product')
             .then(result => {
                 totalData = result.rows[0].count;
+                if (totalData < paramBody.pageLimit){
+                    pageLimit = totalData;
+                }
             })
             .catch(err => {
                 console.log(err.stack)
                 console.log();
             });
-        client.query('SELECT * FROM product ORDER BY plat ASC LIMIT '.concat(paramBody.pageLimit).concat(' OFFSET ').concat(offset))
+        client.query('SELECT * FROM product where plat like $1 ORDER BY plat ASC LIMIT $2 OFFSET $3',[platNo,pageLimit, offset])
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(ele => {
