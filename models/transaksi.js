@@ -1,6 +1,6 @@
 class transaksi{
     
-    constructor(id_transaksi, tanggal, keterangan, jumlah) {
+    constructor(tanggal, keterangan, jumlah,id_transaksi) {
         this.id_transaksi = id_transaksi;
         this.tanggal = tanggal;
         this.keterangan = keterangan;

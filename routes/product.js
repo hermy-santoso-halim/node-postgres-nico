@@ -113,7 +113,7 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
                 } else {
                     // masuk pending transaction
                     let pendingTransaction = new PendingTransModel(product.tgl_beli,
-                        product.hrg_beli,descTrx
+                        descTrx,product.hrg_beli
                     );
                     client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
                         [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan])
