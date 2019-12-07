@@ -71,8 +71,9 @@ router.post('/api/v1/products', (httprequest, httpresponse) => {
     });
 });
 
-router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
-    let paramBody = httprequest.params;
+router.get('/api/v1/product', (httprequest, httpresponse) => {
+    let paramBody = httprequest.body;
+    console.log(paramBody)
     let listBiaya=[];
     let product;
     pool.connect().then(client => {
