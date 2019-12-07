@@ -32,7 +32,6 @@ router.get('/api/v1/pendingtrxs', (httprequest, httpresponse) => {
                         let pendingTransaction = new PendingTransModel(element.tanggal,
                             element.keterangan,element.jumlah, element.id_pendingtrans
                         );
-                        pendingTransaction.selected = false;
                         results.push(pendingTransaction);
                     });
                 }
@@ -49,5 +48,34 @@ router.get('/api/v1/pendingtrxs', (httprequest, httpresponse) => {
     });
 });
   
+
+router.post('/api/v1/pendingtrxsbyids', (httprequest, httpresponse) => {
+    const results = [];
+
+    let paramBody = httprequest.body;
+
+    pool.connect().then(client => {
+        client.query('SELECT * FROM pending_transaksi where id_pendingtrans in $1 ORDER BY tanggal ASC',[paramBody.pendingtrxid])
+            .then(result => {
+                if (result.rowCount > 0) {
+                    result.rows.forEach(element => {
+                        let pendingTransaction = new PendingTransModel(element.tanggal,
+                            element.keterangan,element.jumlah, element.id_pendingtrans
+                        );
+                        results.push(pendingTransaction);
+                    });
+                }
+                let returnData ={listData:results};
+
+                httpresponse.setHeader('Content-Type', 'application/json');
+                httpresponse.json(returnData);
+                client.release();
+            })
+            .catch(err => {
+                client.release();
+                console.log(err.stack)
+            });
+    });
+});
 
 module.exports = router;
