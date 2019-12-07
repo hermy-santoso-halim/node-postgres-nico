@@ -1,7 +1,8 @@
 var express = require('express');
 var cors = require('cors');
 var router = express.Router();
-const { Pool } = require('pg')
+var PendingTransModel = require('../models/pending_transaksi');
+const { Pool } = require('pg');
 
 const pool = new Pool({
     user: 'pczkdkvxgizjtj',
@@ -30,7 +31,12 @@ router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) =
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(element => {
-                        results.push(element);
+
+                        let pendingTransaction = new PendingTransModel(element.tgl,
+                            element.jumlah,element.keterangan
+                        );
+
+                        results.push(pendingTransaction);
                     });
                 }
                 httpresponse.setHeader('Content-Type', 'application/json');
