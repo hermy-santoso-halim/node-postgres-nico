@@ -86,6 +86,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                     let listBiaya=[];
                     client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
                     .then(resultBiaya => {
+                        console.log(resultBiaya);
                         if (resultBiaya.rowCount > 0) {
                             resultBiaya.rows.forEach(ele => {
                                 let biaya= new BiayaModel(ele.nama,ele.harga,ele.tgl_trans);
