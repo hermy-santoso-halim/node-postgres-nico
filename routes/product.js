@@ -90,6 +90,7 @@ router.post('/api/v1/getproduct', (httprequest, httpresponse) => {
                                 listBiaya.push(biaya);
                             });
                             product.listBiaya = listBiaya;
+                            console.log('listbiaya ',log);
 
                             httpresponse.status(200);
                             httpresponse.json(product);
