@@ -31,9 +31,6 @@ router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) =
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(element => {
-
-                        console.log(element);
-
                         let pendingTransaction = new PendingTransModel(element.tanggal,
                             element.keterangan,element.jumlah, element.id_pendingtrans
                         );
@@ -51,26 +48,6 @@ router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) =
             });
     });
 });
-
-router.post('/api/v1/pendingtrx', (httprequest, httpresponse) => {
-    let paramBody = httprequest.body;
-    var date = new Date();
-
-    pool.connect().then(client => {
-      client.query('insert into pending_transaksi ("id_pendingtrans","tgl", "keterangan", "jmlh") values ($1,$2,$3,$4)',
-      [paramBody.id_pendingtrans, date, paramBody.keterangan, paramBody.jmlh])
-      .then(result => {
-        httpresponse.status(200);
-        httpresponse.json({success:true});
-      })
-      .catch(err => {
-        console.log(err.stack)
-        httpresponse.status(500);
-        httpresponse.json({success:false});
-      });
-    });
-    
-  });
   
 
 module.exports = router;

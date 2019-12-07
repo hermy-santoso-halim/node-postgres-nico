@@ -75,15 +75,29 @@ router.post('/api/v1/products', (httprequest, httpresponse) => {
 
 router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
     let paramBody = httprequest.params;
-    console.log(paramBody.plat);
-
     pool.connect().then(client => {
-        client.query('SELECT * FROM product where plat like $1', [paramBody.plat])
+        client.query('SELECT * FROM product where plat = $1', [paramBody.plat])
             .then(result => {
                 if (result.rowCount > 0) {
                     httpresponse.setHeader('Content-Type', 'application/json');
                     let ele = result.rows[0];
                     let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image);
+                    
+                    let listBiaya=[];
+                    client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
+                    .then(resultBiaya => {
+                        if (resultBiaya.rowCount > 0) {
+                            resultBiaya.rows.forEach(ele => {
+                                let biaya= new BiayaModel(ele.nama,ele.harga,ele.tgl_trans);
+                                listBiaya.push(biaya);
+                            });
+                        }
+                    })
+                    .catch(err=>{
+                        client.release();
+                        console.log(err.stack)
+                    })
+                    product.listBiaya = listBiaya;
                     httpresponse.json(product);
                 }
                 client.release();
