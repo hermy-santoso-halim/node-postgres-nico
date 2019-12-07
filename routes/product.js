@@ -83,7 +83,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                 if (result.rowCount > 0) {
                     httpresponse.setHeader('Content-Type', 'application/json');
                     let ele = result.rows[0];
-                    product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image);
+                    product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual);
                     
                     client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
                     .then(resultBiaya => {
@@ -93,7 +93,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                                 listBiaya.push(biaya);
                             });
                             product.listBiaya = listBiaya;
-                            
+
                             httpresponse.status(200);
                             httpresponse.json(product);
                         } else{
@@ -120,26 +120,26 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
 
 router.post('/api/v1/product', (httprequest, httpresponse) => {
     let paramBody = httprequest.body;
-    let product = new ProductModel(paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli, paramBody.image);
+    let product = new ProductModel(paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli, paramBody.image,false);
 
     pool.connect().then(client => {
-        client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli","image") values ($1,$2,$3,$4,$5,$6,$7,$8)',
-            [product.plat, product.merk, product.tipe, product.tahun, product.pajak, product.hrg_beli, product.tgl_beli,product.image])
+        client.query('insert into product ("plat","merk", "tipe", "tahun", "pajak" ,"hrg_beli", "tgl_beli","image","status_jual") values ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+            [product.plat, product.merk, product.tipe, product.tahun, product.pajak, product.hrg_beli, product.tgl_beli,product.image, product.status_jual])
             .then(result => {
                 let descTrx = "PEMBELIAN MOTOR PLAT NO : ".concat(product.plat).concat(":::Tipe : ").concat(product.tipe).concat(" ").concat(product.merk);
                 if (paramBody.settle) {
                     //masuk transaction
                     let transaksi = new TransModel(product.tgl_beli, descTrx, product.hrg_beli);
-                    client.query('insert into transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
-                        [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan])
+                    client.query('insert into transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3)',
+                        [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan, "EXP"])
                         .then(result => { console.log('success insert trx') }).catch(err => {console.log('failed insert trx'); console.log(err) });
                 } else {
                     // masuk pending transaction
                     let pendingTransaction = new PendingTransModel(product.tgl_beli,
                         descTrx,product.hrg_beli
                     );
-                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
-                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan])
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3)',
+                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"EXP"])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
                 httpresponse.status(200);
@@ -168,14 +168,14 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
                 if (paramBody.settle) {
                     //masuk transaction
                     let transaksi = new TransModel(biaya.tgl_trans, descCost, biaya.harga);
-                    client.query('insert into transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
-                        [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan])
+                    client.query('insert into transaksi ("tanggal","jumlah", "keterangan","kode_transaksi") values ($1,$2,$3)',
+                        [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan,"EXP"])
                         .then(result => { console.log('success insert trx') }).catch(err => {console.log('failed insert trx'); console.log(err) });
                 } else {
                     // masuk pending transaction
                     let pendingTransaction = new PendingTransModel(biaya.tgl_trans, descCost,biaya.harga);
-                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
-                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan])
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi) values ($1,$2,$3)',
+                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"EXP"])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
                 httpresponse.status(200);
