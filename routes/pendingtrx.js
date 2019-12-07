@@ -22,25 +22,10 @@ router.get('/echo', (httprequest, httpresponse) => {
     httpresponse.json({ success: true });
 })
 
-router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) => {
+router.get('/api/v1/pendingtrxs', (httprequest, httpresponse) => {
     const results = [];
-    let paramBody = httprequest.params;
-    let offset = (parseInt(paramBody.page) - 1) * parseInt(paramBody.pageLimit);
-    let totalData =0;
-
     pool.connect().then(client => {
-        client.query('SELECT count(tanggal) FROM pending_transaksi')
-            .then(result => {
-                totalData = result.rows[0].count;
-                if (totalData < paramBody.pageLimit){
-                    pageLimit = totalData;
-                }
-            })
-            .catch(err => {
-                console.log(err.stack)
-                console.log();
-            });
-        client.query('SELECT * FROM pending_transaksi ORDER BY tanggal ASC LIMIT '.concat(paramBody.pageLimit).concat(' OFFSET ').concat(offset))
+        client.query('SELECT * FROM pending_transaksi ORDER BY tanggal ASC')
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(element => {
@@ -51,7 +36,7 @@ router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) =
                         results.push(pendingTransaction);
                     });
                 }
-                let returnData ={totalCount:totalData,listData:results};
+                let returnData ={listData:results};
 
                 httpresponse.setHeader('Content-Type', 'application/json');
                 httpresponse.json(returnData);
