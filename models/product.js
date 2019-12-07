@@ -1,6 +1,6 @@
 class product {
     
-    constructor(plat, merk, tipe, tahun, pajak, hrg_beli, tgl_beli, image,status_jual) {
+    constructor(plat, merk, tipe, tahun, pajak, hrg_beli, tgl_beli, image,status_jual,harga_jual,tgl_jual, pembeli) {
         this.plat = plat;
         this.merk = merk;
         this.tipe = tipe;
@@ -10,6 +10,9 @@ class product {
         this.tgl_beli = tgl_beli;
         this.image = image;
         this.status_jual = status_jual;
+        this.harga_jual = harga_jual;
+        this.tgl_jual = tgl_jual;
+        this.pembeli = pembeli;
     }
 }
 

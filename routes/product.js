@@ -30,8 +30,6 @@ router.use(cors({
     origin: '*'
 }));
 
-
-
 router.post('/api/v1/products', (httprequest, httpresponse) => {
     const results = [];
     let paramBody = httprequest.body;
@@ -56,7 +54,7 @@ router.post('/api/v1/products', (httprequest, httpresponse) => {
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(ele => {
-                        let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli,ele.image);
+                        let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli,ele.image,ele.status_jual, ele.harga_jual, ele.tgl_jual, ele.pembeli);
                         results.push(product);
                     });
                 }
@@ -83,7 +81,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                 if (result.rowCount > 0) {
                     httpresponse.setHeader('Content-Type', 'application/json');
                     let ele = result.rows[0];
-                    product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual);
+                    product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual, ele.harga_jual, ele.tgl_jual, ele.pembeli);
                     
                     client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
                     .then(resultBiaya => {
@@ -129,7 +127,7 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
                 let descTrx = "PEMBELIAN MOTOR PLAT NO : ".concat(product.plat).concat(":::Tipe : ").concat(product.tipe).concat(" ").concat(product.merk);
                 if (paramBody.settle) {
                     //masuk transaction
-                    
+
                     let transaksi = new TransModel(product.tgl_beli, descTrx, product.hrg_beli);
                     client.query('insert into transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3)',
                         [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan, "EXP"])
@@ -187,6 +185,45 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
                 httpresponse.json({ success: false });
         });            
     });
+});
+
+router.post('/api/v1/jualproduct', (httprequest, httpresponse) => {
+    let paramBody = httprequest.body;
+    var date = new Date();
+
+    let product = new ProductModel(paramBody.plat, paramBody.merk, paramBody.tipe, paramBody.tahun, paramBody.pajak, paramBody.hrg_beli, paramBody.tgl_beli, paramBody.image,true,paramBody.harga_jual,date,paramBody.pembeli);
+
+    pool.connect().then(client => {
+        client.query('update product set status_jual = $1,hrg_jual=$2, tgl_jual=$3, pembeli=$4 where plat = $5',
+            [product.status_jual, product.harga_jual, product.tgl_jual, product.pembeli, product.plat])
+            .then(result => {
+                let descTrx = "PENJUALAN MOTOR PLAT NO : ".concat(product.plat).concat(":::Tipe : ").concat(product.tipe).concat(" ").concat(product.merk);
+                if (paramBody.settle) {
+                    //masuk transaction
+
+                    let transaksi = new TransModel(product.tgl_jual, descTrx, product.harga_jual);
+                    client.query('insert into transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3)',
+                        [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan, "INC"])
+                        .then(result => { console.log('success insert trx') }).catch(err => {console.log('failed insert trx'); console.log(err) });
+                } else {
+                    // masuk pending transaction
+                    let pendingTransaction = new PendingTransModel(product.tgl_jual,
+                        descTrx,product.harga_jual
+                    );
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3)',
+                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"INC"])
+                        .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
+                }
+                httpresponse.status(200);
+                httpresponse.json({ success: true });
+            })
+            .catch(err => {
+                console.log(err.stack)
+                httpresponse.status(500);
+                httpresponse.json({ success: false });
+            });
+    });
+
 });
 
 module.exports = router;
