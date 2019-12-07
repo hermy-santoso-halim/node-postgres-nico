@@ -115,7 +115,7 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
                     let pendingTransaction = new PendingTransModel(product.tgl_beli,
                         product.hrg_beli,descTrx
                     );
-                    client.query('insert into pending_transaksi ("tgl","jmlh", "keterangan") values ($1,$2,$3)',
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
                         [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
@@ -145,7 +145,7 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
                 if (paramBody.settle) {
                     //masuk transaction
                     let transaksi = new TransModel(biaya.tgl_trans, descCost, biaya.harga);
-                    client.query('insert into transaksi ("tgl","jmlh", "keterangan") values ($1,$2,$3)',
+                    client.query('insert into transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
                         [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan])
                         .then(result => { console.log('success insert trx') }).catch(err => {console.log('failed insert trx'); console.log(err) });
                 } else {
