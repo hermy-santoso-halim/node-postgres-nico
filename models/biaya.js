@@ -1,6 +1,6 @@
 class biaya {
     
-    constructor(id, nama, harga, tgl_trans, grup_biaya) {
+    constructor(nama, harga, tgl_trans, grup_biaya,id) {
         this.id = id;
         this.nama = nama;
         this.harga = harga;

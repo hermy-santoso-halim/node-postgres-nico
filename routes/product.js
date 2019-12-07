@@ -135,7 +135,7 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
     let paramBody = httprequest.body;
     var date = new Date();
 
-    let biaya = new BiayaModel(makeid(5), paramBody.nama, paramBody.harga, date, paramBody.grup_biaya);
+    let biaya = new BiayaModel(paramBody.nama, paramBody.harga, date, paramBody.grup_biaya);
     let descCost = "BIAYA TAMBAHAN : ".concat(biaya.nama).concat(":::Tipe Biaya : ").concat(biaya.grup_biaya);
     pool.connect().then(client => {
         client.query('insert into biaya ("id_biaya","nama", "harga", "tgl_beli","grup_biaya") values ($1,$2,$3,$4,$5)',
