@@ -196,7 +196,7 @@ router.post('/api/v1/jualproduct', (httprequest, httpresponse) => {
             .then(result => {
                 let descTrx = "PENJUALAN MOTOR PLAT NO : ".concat(product.plat).concat(":::Tipe : ").concat(product.tipe).concat(" ").concat(product.merk);
                 if (paramBody.settle) {
-                    //masuk transaction
+                    //masuk transactions
                     let transaksi = new TransModel(product.tgl_jual, descTrx, product.harga_jual);
                     client.query('insert into transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3,$4)',
                         [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan, "INC"])
