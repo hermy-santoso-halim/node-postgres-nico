@@ -136,10 +136,11 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
     var date = new Date();
 
     let biaya = new BiayaModel(paramBody.nama, paramBody.harga, date, paramBody.grup_biaya);
+    console.log(biaya);
     let descCost = "BIAYA TAMBAHAN : ".concat(biaya.nama).concat(":::Tipe Biaya : ").concat(biaya.grup_biaya);
     pool.connect().then(client => {
-        client.query('insert into biaya ("id_biaya","nama", "harga", "tgl_beli","grup_biaya") values ($1,$2,$3,$4,$5)',
-            [biaya.id, biaya.nama, biaya.harga, biaya.tgl_trans, biaya.grup_biaya])
+        client.query('insert into biaya ("nama", "harga", "tgl_trans","grup_biaya") values ($1,$2,$3,$4)',
+            [biaya.nama, biaya.harga, biaya.tgl_trans, biaya.grup_biaya])
             .then(result => {  
                 if (paramBody.settle) {
                     //masuk transaction
