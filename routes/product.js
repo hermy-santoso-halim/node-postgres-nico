@@ -85,14 +85,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                     let ele = result.rows[0];
                     product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image);
                     
-                }
-            })
-            .catch(err => {
-                client.release();
-                console.log(err.stack)
-            });
-
-            client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
+                    client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
                     .then(resultBiaya => {
                         if (resultBiaya.rowCount > 0) {
                             resultBiaya.rows.forEach(ele => {
@@ -101,15 +94,28 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                                 console.log(listBiaya);
                             });
                             product.listBiaya = listBiaya;
+                            console.log(product);
+                            httpresponse.status(200);
+                            httpresponse.json(product);
+                        } else{
+                            httpresponse.status(500);
+                            httpresponse.json({});
                         }
                     })
                     .catch(err=>{
-                        client.release();
-                        console.log(err.stack)
+                        httpresponse.status(500);
+                        httpresponse.json({});
                     });
-            console.log(product);
-            httpresponse.status(200);
-            httpresponse.json(product);
+                } else {
+                    httpresponse.status(500);
+                    httpresponse.json({});
+                }
+            })
+            .catch(err => {
+                console.log(err.stack);
+                httpresponse.status(500);
+                httpresponse.json({});
+            });
     });
 });
 
