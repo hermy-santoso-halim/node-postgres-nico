@@ -73,15 +73,14 @@ router.post('/api/v1/products', (httprequest, httpresponse) => {
 
 router.post('/api/v1/getproduct', (httprequest, httpresponse) => {
     let paramBody = httprequest.body;
-    console.log(paramBody)
     let listBiaya=[];
     let product;
     pool.connect().then(client => {
         client.query('SELECT * FROM product where plat = $1', [paramBody.plat])
             .then(result => {
                 if (result.rowCount > 0) {  
-                    httpresponse.setHeader('Content-Type', 'application/json');
                     let ele = result.rows[0];
+                    console.log(ele);
                     product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual, ele.hrg_jual, ele.tgl_jual, ele.pembeli);
                     
                     client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
@@ -101,6 +100,7 @@ router.post('/api/v1/getproduct', (httprequest, httpresponse) => {
                         }
                     })
                     .catch(err=>{
+                        console.log(err.stack);
                         httpresponse.status(500);
                         httpresponse.json({});
                     });
