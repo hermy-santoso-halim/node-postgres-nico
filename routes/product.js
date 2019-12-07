@@ -76,15 +76,23 @@ router.post('/api/v1/products', (httprequest, httpresponse) => {
 router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
     let paramBody = httprequest.params;
     let listBiaya=[];
+    let product;
     pool.connect().then(client => {
         client.query('SELECT * FROM product where plat = $1', [paramBody.plat])
             .then(result => {
                 if (result.rowCount > 0) {
                     httpresponse.setHeader('Content-Type', 'application/json');
                     let ele = result.rows[0];
-                    let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image);
+                    product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image);
                     
-                    client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
+                }
+            })
+            .catch(err => {
+                client.release();
+                console.log(err.stack)
+            });
+
+            client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
                     .then(resultBiaya => {
                         if (resultBiaya.rowCount > 0) {
                             resultBiaya.rows.forEach(ele => {
@@ -92,25 +100,16 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                                 listBiaya.push(biaya);
                                 console.log(listBiaya);
                             });
+                            product.listBiaya = listBiaya;
                         }
                     })
                     .catch(err=>{
                         client.release();
                         console.log(err.stack)
-                    })
-                    product.listBiaya = listBiaya;
-                    console.log('luar');
-                    console.log(listBiaya);
-                    console.log(product);
-                    
-                    httpresponse.json(product);
-                }
-                client.release();
-            })
-            .catch(err => {
-                client.release();
-                console.log(err.stack)
-            });
+                    });
+            console.log(product);
+            httpresponse.status(200);
+            httpresponse.json(product);
     });
 });
 
