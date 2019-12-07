@@ -75,6 +75,7 @@ router.post('/api/v1/products', (httprequest, httpresponse) => {
 
 router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
     let paramBody = httprequest.params;
+    let listBiaya=[];
     pool.connect().then(client => {
         client.query('SELECT * FROM product where plat = $1', [paramBody.plat])
             .then(result => {
@@ -83,7 +84,6 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                     let ele = result.rows[0];
                     let product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image);
                     
-                    let listBiaya=[];
                     client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
                     .then(resultBiaya => {
                         if (resultBiaya.rowCount > 0) {
