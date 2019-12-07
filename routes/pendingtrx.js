@@ -32,7 +32,7 @@ router.get('/api/v1/pendingtrxs', (httprequest, httpresponse) => {
                         let pendingTransaction = new PendingTransModel(element.tanggal,
                             element.keterangan,element.jumlah, element.id_pendingtrans
                         );
-
+                        pendingTransaction.selected = false;
                         results.push(pendingTransaction);
                     });
                 }
