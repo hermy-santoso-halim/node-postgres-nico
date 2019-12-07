@@ -107,7 +107,7 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
                 if (paramBody.settle) {
                     //masuk transaction
                     let transaksi = new TransModel(product.tgl_beli, descTrx, product.hrg_beli);
-                    client.query('insert into transaksi ("tgl","jmlh", "keterangan") values ($1,$2,$3)',
+                    client.query('insert into transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
                         [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan])
                         .then(result => { console.log('success insert trx') }).catch(err => {console.log('failed insert trx'); console.log(err) });
                 } else {
@@ -137,7 +137,7 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
 
     let biaya = new BiayaModel(paramBody.nama, paramBody.harga, date, paramBody.grup_biaya);
 
-    let descCost = "BIAYA TAMBAHAN : ".concat(biaya.nama).concat(":::Tipe Biaya : ").concat(biaya.grup_biaya);
+    let descCost = "BIAYA TAMBAHAN : ".concat(biaya.nama).concat(":::Grup Biaya : ").concat(biaya.grup_biaya);
     pool.connect().then(client => {
         client.query('insert into biaya ("nama", "harga", "tgl_trans","grup_biaya") values ($1,$2,$3,$4)',
             [biaya.nama, biaya.harga, biaya.tgl_trans, biaya.grup_biaya])
@@ -151,7 +151,7 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
                 } else {
                     // masuk pending transaction
                     let pendingTransaction = new PendingTransModel(biaya.tgl_trans, descCost,biaya.harga);
-                    client.query('insert into pending_transaksi ("tgl","jmlh", "keterangan") values ($1,$2,$3)',
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan") values ($1,$2,$3)',
                         [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
