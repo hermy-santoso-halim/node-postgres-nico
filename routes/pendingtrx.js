@@ -54,7 +54,6 @@ router.post('/api/v1/pendingtrxsbyids', (httprequest, httpresponse) => {
 
     let paramBody = httprequest.body;
     let idList = paramBody.pendingtrxid.split(",");
-    console.log(idList);
 
     pool.connect().then(client => {
         client.query('SELECT * FROM pending_transaksi where id_pendingtrans = ANY ($1) ORDER BY tanggal ASC',[idList])
