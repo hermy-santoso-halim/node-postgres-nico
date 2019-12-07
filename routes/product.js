@@ -80,7 +80,6 @@ router.post('/api/v1/getproduct', (httprequest, httpresponse) => {
             .then(result => {
                 if (result.rowCount > 0) {  
                     let ele = result.rows[0];
-                    console.log(ele);
                     product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual, ele.hrg_jual, ele.tgl_jual, ele.pembeli);
                     
                     client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
@@ -94,9 +93,6 @@ router.post('/api/v1/getproduct', (httprequest, httpresponse) => {
 
                             httpresponse.status(200);
                             httpresponse.json(product);
-                        } else{
-                            httpresponse.status(500);
-                            httpresponse.json({});
                         }
                     })
                     .catch(err=>{
