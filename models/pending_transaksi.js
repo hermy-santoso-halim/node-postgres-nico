@@ -1,6 +1,6 @@
 class pending_transaksi {
     
-    constructor(id_pendingtrans, tgl, keterangan, jmlh) {
+    constructor(tgl, keterangan, jmlh, id_pendingtrans) {
         this.id_pendingtrans = id_pendingtrans;
         this.tgl = tgl;
         this.keterangan = keterangan;
