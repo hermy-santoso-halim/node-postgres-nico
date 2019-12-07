@@ -81,7 +81,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                 if (result.rowCount > 0) {
                     httpresponse.setHeader('Content-Type', 'application/json');
                     let ele = result.rows[0];
-                    product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual, ele.hrg_jual, ele.tgl_jual, ele.pembeli);
+                    product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual, ele.h  rg_jual, ele.tgl_jual, ele.pembeli);
                     
                     client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
                     .then(resultBiaya => {
@@ -156,7 +156,6 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
 router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
     let paramBody = httprequest.body;
     var date = new Date();
-
     let biaya = new BiayaModel(paramBody.nama, paramBody.harga, date, paramBody.grup_biaya);
 
     let descCost = "BIAYA TAMBAHAN : ".concat(biaya.nama).concat(":::Grup Biaya : ").concat(biaya.grup_biaya);
