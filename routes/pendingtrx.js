@@ -27,7 +27,7 @@ router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) =
     let paramBody = httprequest.params;
     let offset = (parseInt(paramBody.page) - 1) * parseInt(paramBody.pageLimit);
     pool.connect().then(client => {
-        client.query('SELECT * FROM pending_transaksi ORDER BY tgl ASC LIMIT '.concat(paramBody.pageLimit).concat(' OFFSET ').concat(offset))
+        client.query('SELECT * FROM pending_transaksi ORDER BY tanggal ASC LIMIT '.concat(paramBody.pageLimit).concat(' OFFSET ').concat(offset))
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(element => {
