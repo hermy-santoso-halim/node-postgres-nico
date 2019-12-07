@@ -75,6 +75,7 @@ router.post('/api/v1/getproduct', (httprequest, httpresponse) => {
     let paramBody = httprequest.body;
     let listBiaya=[];
     let product;
+    console.log(paramBody);
     pool.connect().then(client => {
         client.query('SELECT * FROM product where plat = $1', [paramBody.plat])
             .then(result => {
