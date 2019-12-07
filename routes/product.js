@@ -83,6 +83,7 @@ router.post('/api/v1/getproduct', (httprequest, httpresponse) => {
                 if (result.rowCount > 0) {  
                     let ele = result.rows[0];
                     product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual, ele.hrg_jual, ele.tgl_jual, ele.pembeli);
+                    product.listBiaya =[];
                     client.query('SELECT * FROM biaya where grup_biaya = $1', [product.plat])
                     .then(resultBiaya => {
                         if (resultBiaya.rowCount > 0) {
