@@ -32,10 +32,8 @@ router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) =
                 if (result.rowCount > 0) {
                     result.rows.forEach(element => {
 
-                        console.log(element);
-
                         let pendingTransaction = new PendingTransModel(element.tgl,
-                            element.keterangan,element.jmlh, element.id_pendingtrans
+                            element.keterangan.split(":::")[0],element.jmlh, element.id_pendingtrans,element.keterangan.split(":::")[1]
                         );
 
                         results.push(pendingTransaction);
