@@ -91,10 +91,8 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                             resultBiaya.rows.forEach(ele => {
                                 let biaya= new BiayaModel(ele.nama,ele.harga,ele.tgl_trans);
                                 listBiaya.push(biaya);
-                                console.log(listBiaya);
                             });
                             product.listBiaya = listBiaya;
-                            console.log(product);
                             httpresponse.status(200);
                             httpresponse.json(product);
                         } else{
