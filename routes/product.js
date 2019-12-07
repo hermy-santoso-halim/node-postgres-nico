@@ -90,6 +90,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                             resultBiaya.rows.forEach(ele => {
                                 let biaya= new BiayaModel(ele.nama,ele.harga,ele.tgl_trans);
                                 listBiaya.push(biaya);
+                                console.log(listBiaya);
                             });
                         }
                     })
@@ -98,11 +99,10 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                         console.log(err.stack)
                     })
                     product.listBiaya = listBiaya;
+                    console.log('luar');
                     console.log(listBiaya);
                     console.log(product);
-                    httpresponse.header("Cache-Control", "no-cache, no-store, must-revalidate");
-                    httpresponse.header("Pragma", "no-cache");
-                    httpresponse.header("Expires", 0);
+                    
                     httpresponse.json(product);
                 }
                 client.release();
