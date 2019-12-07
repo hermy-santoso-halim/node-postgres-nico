@@ -100,6 +100,9 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                     product.listBiaya = listBiaya;
                     console.log(listBiaya);
                     console.log(product);
+                    httpresponse.header("Cache-Control", "no-cache, no-store, must-revalidate");
+                    httpresponse.header("Pragma", "no-cache");
+                    httpresponse.header("Expires", 0);
                     httpresponse.json(product);
                 }
                 client.release();
