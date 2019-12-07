@@ -34,8 +34,8 @@ router.get('/api/v1/pendingtrxs/:page/:pageLimit', (httprequest, httpresponse) =
 
                         console.log(element);
 
-                        let pendingTransaction = new PendingTransModel(element.tgl,
-                            element.keterangan,element.jmlh, element.id_pendingtrans
+                        let pendingTransaction = new PendingTransModel(element.tanggal,
+                            element.keterangan,element.jumlah, element.id_pendingtrans
                         );
 
                         results.push(pendingTransaction);
