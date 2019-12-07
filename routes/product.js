@@ -170,7 +170,7 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
                 } else {
                     // masuk pending transaction
                     let pendingTransaction = new PendingTransModel(biaya.tgl_trans, descCost,biaya.harga);
-                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi) values ($1,$2,$3,$4)',
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3,$4)',
                         [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"EXP"])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
