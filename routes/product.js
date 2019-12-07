@@ -136,7 +136,7 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
     var date = new Date();
 
     let biaya = new BiayaModel(paramBody.nama, paramBody.harga, date, paramBody.grup_biaya);
-    console.log(biaya);
+
     let descCost = "BIAYA TAMBAHAN : ".concat(biaya.nama).concat(":::Tipe Biaya : ").concat(biaya.grup_biaya);
     pool.connect().then(client => {
         client.query('insert into biaya ("nama", "harga", "tgl_trans","grup_biaya") values ($1,$2,$3,$4)',
@@ -150,7 +150,7 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
                         .then(result => { console.log('success insert trx') }).catch(err => {console.log('failed insert trx'); console.log(err) });
                 } else {
                     // masuk pending transaction
-                    let pendingTransaction = new PendingTransModel(biaya.tgl_trans, biaya.harga,descCost);
+                    let pendingTransaction = new PendingTransModel(biaya.tgl_trans, descCost,biaya.harga);
                     client.query('insert into pending_transaksi ("tgl","jmlh", "keterangan") values ($1,$2,$3)',
                         [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
