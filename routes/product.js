@@ -93,6 +93,7 @@ router.get('/api/v1/product/:plat', (httprequest, httpresponse) => {
                                 listBiaya.push(biaya);
                             });
                             product.listBiaya = listBiaya;
+                            
                             httpresponse.status(200);
                             httpresponse.json(product);
                         } else{
