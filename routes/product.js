@@ -71,7 +71,7 @@ router.post('/api/v1/products', (httprequest, httpresponse) => {
     });
 });
 
-router.get('/api/v1/product', (httprequest, httpresponse) => {
+router.post('/api/v1/getproduct', (httprequest, httpresponse) => {
     let paramBody = httprequest.body;
     console.log(paramBody)
     let listBiaya=[];
@@ -79,7 +79,7 @@ router.get('/api/v1/product', (httprequest, httpresponse) => {
     pool.connect().then(client => {
         client.query('SELECT * FROM product where plat = $1', [paramBody.plat])
             .then(result => {
-                if (result.rowCount > 0) {
+                if (result.rowCount > 0) {  
                     httpresponse.setHeader('Content-Type', 'application/json');
                     let ele = result.rows[0];
                     product= new ProductModel(ele.plat, ele.merk, ele.tipe, ele.tahun, ele.pajak, ele.hrg_beli, ele.tgl_beli, ele.image,ele.status_jual, ele.hrg_jual, ele.tgl_jual, ele.pembeli);
