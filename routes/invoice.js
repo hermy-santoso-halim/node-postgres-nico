@@ -32,10 +32,8 @@ router.post('/api/v1/invoice', (httprequest, httpresponse) => {
     [invoice.creator,invoice.tgl,invoice.list_pending, invoice.notes_payment,invoice.no_rek, invoice.bank_rek,invoice.nama_rek])
     .then(result => {
       let returnId =result.rows[0].invoice_no;
-
       client.query('update pending_transaksi set status_transaksi =\'PROCESSED\' where id_pendingtrans = ANY ($1)',[invoice.list_pending])
       .then(resultUpdate =>{
-        console.log('result update ',resultUpdate);
         httpresponse.status(200);
         httpresponse.json({success:true, returnId:returnId});
       })
