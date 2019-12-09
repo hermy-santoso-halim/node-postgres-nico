@@ -30,7 +30,7 @@ router.post('/api/v1/invoice', (httprequest, httpresponse) => {
     .then(result => {
       console.log('result insert ',result);
 
-      client.query('update pending_transaksi set status_transaksi ="PROCESSED" where id_pendingtrans = ANY ($1)',invoice.list_pending)
+      client.query('update pending_transaksi set status_transaksi =\'PROCESSED\' where id_pendingtrans = ANY ($1)',invoice.list_pending)
       .then(resultUpdate =>{
         console.log('result update ',resultUpdate);
         httpresponse.status(200);
