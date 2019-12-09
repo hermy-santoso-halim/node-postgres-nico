@@ -28,10 +28,10 @@ router.post('/api/v1/invoice', (httprequest, httpresponse) => {
 
 
   pool.connect().then(client => {
-    client.query('insert into invoice_header ("creator","tgl", "list_pending", "notes_payment","no_rek","bank_rek","nama_rek") values ($1,$2,$3,$4,$5,$6,$7)',
+    client.query('insert into invoice_header ("creator","tgl", "list_pending", "notes_payment","no_rek","bank_rek","nama_rek") values ($1,$2,$3,$4,$5,$6,$7) returning invoice_no',
     [invoice.creator,invoice.tgl,invoice.list_pending, invoice.notes_payment,invoice.no_rek, invoice.bank_rek,invoice.nama_rek])
     .then(result => {
-      console.log('result insert ',result);
+      console.log('result insert ',result.rows[0]);
 
       client.query('update pending_transaksi set status_transaksi =\'PROCESSED\' where id_pendingtrans = ANY ($1)',[invoice.list_pending])
       .then(resultUpdate =>{

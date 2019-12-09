@@ -29,7 +29,6 @@ router.get('/api/v1/pendingtrxs', (httprequest, httpresponse) => {
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(element => {
-                        console.log(element);
                         let pendingTransaction = new PendingTransModel(element.tanggal,
                             element.keterangan,element.jumlah, element.status_transaksi, element.id_pendingtrans
                         );
