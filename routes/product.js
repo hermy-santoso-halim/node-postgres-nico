@@ -136,8 +136,8 @@ router.post('/api/v1/product', (httprequest, httpresponse) => {
                     let pendingTransaction = new PendingTransModel(product.tgl_beli,
                         descTrx,product.hrg_beli,"PENDING"
                     );
-                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3,$4)',
-                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"EXP"])
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi", "status_transaksi") values ($1,$2,$3,$4)',
+                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"EXP", pendingTransaction.status_transaksi])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
                 httpresponse.status(200);
@@ -171,8 +171,8 @@ router.post('/api/v1/product/biaya', (httprequest, httpresponse) => {
                 } else {
                     // masuk pending transaction
                     let pendingTransaction = new PendingTransModel(biaya.tgl_trans, descCost,biaya.harga,"PENDING");
-                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3,$4)',
-                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"EXP"])
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi","status_transaksi") values ($1,$2,$3,$4)',
+                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"EXP", pendingTransaction.status_transaksi])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
                 httpresponse.status(200);
@@ -207,8 +207,8 @@ router.post('/api/v1/jualproduct', (httprequest, httpresponse) => {
                     let pendingTransaction = new PendingTransModel(product.tgl_jual,
                         descTrx,product.harga_jual,"PENDING"
                     );
-                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi") values ($1,$2,$3,$4)',
-                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"INC"])
+                    client.query('insert into pending_transaksi ("tanggal","jumlah", "keterangan", "kode_transaksi", "status_transaksi") values ($1,$2,$3,$4)',
+                        [pendingTransaction.tgl, pendingTransaction.jmlh, pendingTransaction.keterangan,"INC", pendingTransaction.status_transaksi])
                         .then(result => { console.log('success insert pending trx') }).catch(err => {console.log('failed insert pending trx'); console.log(err) });
                 }
                 httpresponse.status(200);
