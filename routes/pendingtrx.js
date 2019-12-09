@@ -31,7 +31,7 @@ router.get('/api/v1/pendingtrxs', (httprequest, httpresponse) => {
                     result.rows.forEach(element => {
                         console.log(element);
                         let pendingTransaction = new PendingTransModel(element.tanggal,
-                            element.keterangan,element.jumlah, element.id_pendingtrans
+                            element.keterangan,element.jumlah, element.status_transaksi, element.id_pendingtrans
                         );
                         results.push(pendingTransaction);
                     });
