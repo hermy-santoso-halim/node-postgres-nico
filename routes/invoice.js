@@ -21,11 +21,8 @@ router.post('/api/v1/invoice', (httprequest, httpresponse) => {
   let paramBody = httprequest.body;
   var date = new Date();
 
-  console.log(paramBody);
-
   let invoice = new invoiceModel(paramBody.created_by, date,paramBody.pendTrxIds,
     paramBody.desc, paramBody.noRek, paramBody.bankRek, paramBody.namaRek);
-
 
   pool.connect().then(client => {
     client.query('insert into invoice_header ("creator","tgl", "list_pending", "notes_payment","no_rek","bank_rek","nama_rek") values ($1,$2,$3,$4,$5,$6,$7) returning invoice_no',
