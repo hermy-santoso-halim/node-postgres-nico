@@ -25,7 +25,7 @@ router.get('/echo', (httprequest, httpresponse) => {
 router.get('/api/v1/pendingtrxs', (httprequest, httpresponse) => {
     const results = [];
     pool.connect().then(client => {
-        client.query('SELECT * FROM pending_transaksi ORDER BY tanggal ASC')
+        client.query('SELECT * FROM pending_transaksi where status_transaksi ="PENDING" ORDER BY tanggal ASC')
             .then(result => {
                 if (result.rowCount > 0) {
                     result.rows.forEach(element => {

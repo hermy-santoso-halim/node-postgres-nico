@@ -12,6 +12,7 @@ var usersRouter = require('./routes/users');
 var productRouter = require('./routes/product');
 var pendingtrxRouter = require('./routes/pendingtrx');
 var loginRouter = require('./routes/login');
+var invoiceRouter = require('./routes/invoice');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/users', usersRouter);
 app.use('/product', productRouter);
 app.use('/pendingtrx', pendingtrxRouter);
 app.use('/login', loginRouter);
+app.use('/invoice', invoiceRouter);
 app.use(session({
 	secret: 'secret',
 	resave: true,
