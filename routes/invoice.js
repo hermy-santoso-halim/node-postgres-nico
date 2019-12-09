@@ -31,13 +31,13 @@ router.post('/api/v1/invoice', (httprequest, httpresponse) => {
     client.query('insert into invoice_header ("creator","tgl", "list_pending", "notes_payment","no_rek","bank_rek","nama_rek") values ($1,$2,$3,$4,$5,$6,$7) returning invoice_no',
     [invoice.creator,invoice.tgl,invoice.list_pending, invoice.notes_payment,invoice.no_rek, invoice.bank_rek,invoice.nama_rek])
     .then(result => {
-      console.log('result insert ',result.rows[0]);
+      let returnId =result.rows[0];
 
       client.query('update pending_transaksi set status_transaksi =\'PROCESSED\' where id_pendingtrans = ANY ($1)',[invoice.list_pending])
       .then(resultUpdate =>{
         console.log('result update ',resultUpdate);
         httpresponse.status(200);
-        httpresponse.json({success:true});
+        httpresponse.json({success:true, returnId:returnId});
       })
       .catch(errorUpdate => {
         console.log(errorUpdate.stack)
