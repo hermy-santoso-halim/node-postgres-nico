@@ -2,6 +2,7 @@ var express = require('express');
 var cors = require('cors');
 var router = express.Router();
 var invoiceModel = require('../models/invoice_header');
+var PendingTransModel = require('../models/pending_transaksi');
 
 const { Pool } = require('pg')
 
@@ -105,6 +106,7 @@ router.post('/api/v1/getinvoice', (httprequest, httpresponse) => {
                   invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_no);
                   invoice.listPendingTrxs =[];
                   let templist=invoice.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
+                  console.log(templist);
                   client.query('SELECT * FROM pending_transaksi where id_pendingtrans = ANY($1)', [templist])
                   .then(resultBiaya => {
                       if (resultBiaya.rowCount > 0) {
