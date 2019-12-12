@@ -56,9 +56,10 @@ router.post('/api/v1/invoices', (httprequest, httpresponse) => {
   let pageLimit = paramBody.pageLimit;
   let totalData =0;
   let invoiceNo =paramBody.invoiceNo;
+  console.log(paramBody);
 
   pool.connect().then(client => {
-      client.query('SELECT count(invoice_no) FROM invoice_header where invoice_no like $1',[invoiceNo])
+      client.query('SELECT count(invoice_no) FROM invoice_header where invoice_no::varchar(255) like $1',[invoiceNo])
           .then(result => {
               totalData = result.rows[0].count;
               if (totalData < paramBody.pageLimit){
@@ -69,7 +70,7 @@ router.post('/api/v1/invoices', (httprequest, httpresponse) => {
               console.log(err.stack)
               console.log();
           });
-      client.query('SELECT * FROM invoice_header where invoice_no like $1 ORDER BY tgl ASC LIMIT $2 OFFSET $3',[invoiceNo,pageLimit, offset])
+      client.query('SELECT * FROM invoice_header where invoice_no::varchar(255) like $1 ORDER BY tgl ASC LIMIT $2 OFFSET $3',[invoiceNo,pageLimit, offset])
           .then(result => {
               if (result.rowCount > 0) {
                   result.rows.forEach(ele => {
