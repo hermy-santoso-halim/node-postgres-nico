@@ -49,5 +49,91 @@ router.post('/api/v1/invoice', (httprequest, httpresponse) => {
   
 });
 
+router.post('/api/v1/invoices', (httprequest, httpresponse) => {
+  const results = [];
+  let paramBody = httprequest.body;
+  let offset = (parseInt(paramBody.page) - 1) * parseInt(paramBody.pageLimit);
+  let pageLimit = paramBody.pageLimit;
+  let totalData =0;
+  let invoiceNo =paramBody.invoiceNo;
+
+  pool.connect().then(client => {
+      client.query('SELECT count(invoice_no) FROM invoice_header where invoice_no like $1',[invoiceNo])
+          .then(result => {
+              totalData = result.rows[0].count;
+              if (totalData < paramBody.pageLimit){
+                  pageLimit = totalData;
+              }
+          })
+          .catch(err => {
+              console.log(err.stack)
+              console.log();
+          });
+      client.query('SELECT * FROM invoice_header where invoice_no like $1 ORDER BY tgl ASC LIMIT $2 OFFSET $3',[invoiceNo,pageLimit, offset])
+          .then(result => {
+              if (result.rowCount > 0) {
+                  result.rows.forEach(ele => {
+                      let invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_no);
+                      results.push(invoice);
+                  });
+              }
+              
+              let returnData ={totalCount:totalData,listData:results};
+              httpresponse.setHeader('Content-Type', 'application/json');
+              httpresponse.json(returnData);
+              client.release();
+          })
+          .catch(err => {
+              client.release();
+              console.log(err.stack)
+              console.log();
+          });
+  });
+});
+
+router.post('/api/v1/getinvoices', (httprequest, httpresponse) => {
+  let paramBody = httprequest.body;
+  let listPendingTrxs=[];
+  let invoice;
+
+  pool.connect().then(client => {
+      client.query('SELECT * FROM invoice_header where invoice_no = $1', [paramBody.invoiceNo])
+          .then(result => {
+              if (result.rowCount > 0) {  
+                  let ele = result.rows[0];
+                  invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_no);
+                  invoice.listPendingTrxs =[];
+                  client.query('SELECT * FROM pending_transaksi where id_pendingtrans = ANY($1)', [product.list_pending])
+                  .then(resultBiaya => {
+                      if (resultBiaya.rowCount > 0) {
+                          resultBiaya.rows.forEach(ele => {
+                            let pendingTransaction = new PendingTransModel(element.tanggal,
+                              element.keterangan,element.jumlah, element.id_pendingtrans
+                          );
+                              listPendingTrxs.push(pendingTransaction);
+                          });
+                          invoice.listPendingTrxs = listPendingTrxs;
+                      }
+                      httpresponse.status(200);
+                      httpresponse.json(invoice);
+                  })
+                  .catch(err=>{
+                      console.log(err.stack);
+                      httpresponse.status(500);
+                      httpresponse.json({});
+                  });
+              } else {
+                  httpresponse.status(500);
+                  httpresponse.json({});
+              }
+          })
+          .catch(err => {
+              console.log(err.stack);
+              httpresponse.status(500);
+              httpresponse.json({});
+          });
+  });
+});
+
 
 module.exports = router;
