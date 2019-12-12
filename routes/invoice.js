@@ -92,7 +92,7 @@ router.post('/api/v1/invoices', (httprequest, httpresponse) => {
   });
 });
 
-router.post('/api/v1/getinvoices', (httprequest, httpresponse) => {
+router.post('/api/v1/getinvoice', (httprequest, httpresponse) => {
   let paramBody = httprequest.body;
   let listPendingTrxs=[];
   let invoice;
@@ -104,8 +104,8 @@ router.post('/api/v1/getinvoices', (httprequest, httpresponse) => {
                   let ele = result.rows[0];
                   invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_no);
                   invoice.listPendingTrxs =[];
-                  console.log(invoice.list_pending);
-                  client.query('SELECT * FROM pending_transaksi where id_pendingtrans = ANY($1)', [invoice.list_pending])
+                  let templist=invoice.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
+                  client.query('SELECT * FROM pending_transaksi where id_pendingtrans = ANY($1)', [templist])
                   .then(resultBiaya => {
                       if (resultBiaya.rowCount > 0) {
                           resultBiaya.rows.forEach(ele => {
