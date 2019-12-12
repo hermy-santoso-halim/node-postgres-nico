@@ -110,7 +110,7 @@ router.post('/api/v1/getinvoice', (httprequest, httpresponse) => {
                   client.query('SELECT * FROM pending_transaksi where id_pendingtrans = ANY($1)', [templist])
                   .then(resultBiaya => {
                       if (resultBiaya.rowCount > 0) {
-                          resultBiaya.rows.forEach(ele => {
+                          resultBiaya.rows.forEach(element => {
                             let pendingTransaction = new PendingTransModel(element.tanggal,
                               element.keterangan,element.jumlah, element.id_pendingtrans
                           );
