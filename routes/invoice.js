@@ -82,7 +82,7 @@ router.post('/api/v1/confirminvoice', (httprequest, httpresponse) => {
         });
       }
         httpresponse.status(200);
-        httpresponse.json({success:true, returnId:returnId});
+        httpresponse.json({success:true});
       })
       .catch(errorUpdate => {
         console.log(errorUpdate.stack)
@@ -160,7 +160,7 @@ router.post('/api/v1/getinvoice', (httprequest, httpresponse) => {
                       if (resultBiaya.rowCount > 0) {
                           resultBiaya.rows.forEach(element => {
                             let pendingTransaction = new PendingTransModel(element.tanggal,
-                              element.keterangan,element.jumlah, element.id_pendingtrans
+                              element.keterangan,element.jumlah,element.status_transaksi, element.id_pendingtrans
                           );
                               listPendingTrxs.push(pendingTransaction);
                           });
