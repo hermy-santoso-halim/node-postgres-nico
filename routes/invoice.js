@@ -162,6 +162,7 @@ router.post('/api/v1/getinvoice', (httprequest, httpresponse) => {
                             let pendingTransaction = new PendingTransModel(element.tanggal,
                               element.keterangan,element.jumlah,element.status_transaksi, element.id_pendingtrans
                           );
+                              pendingTransaction.kode_transaksi = element.kode_transaksi;
                               listPendingTrxs.push(pendingTransaction);
                           });
                           invoice.listPendingTrxs = listPendingTrxs;
