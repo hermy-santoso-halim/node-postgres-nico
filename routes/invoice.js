@@ -68,7 +68,7 @@ router.post('/api/v1/confirminvoice', (httprequest, httpresponse) => {
   }
 
   pool.connect().then(client => {
-    client.query('update invoice_header set invoice_status =$1 where invoice_no = $2',[statusUpdate.invoice,invoice.invoice_no])
+    client.query('update invoice_header set invoice_status =$1 where invoice_no = $2',[statusUpdate.invoice,paramBody.invoice_no])
     .then(result => {
       let templist=paramBody.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
       client.query('update pending_transaksi set status_transaksi =$1 where id_pendingtrans = ANY ($2)',[statusUpdate.pendtrx, templist])
@@ -152,7 +152,7 @@ router.post('/api/v1/getinvoice', (httprequest, httpresponse) => {
           .then(result => {
               if (result.rowCount > 0) {  
                   let ele = result.rows[0];
-                  invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_no);
+                  invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_status,ele.invoice_no);
                   invoice.listPendingTrxs =[];
                   let templist=invoice.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
                   client.query('SELECT * FROM pending_transaksi where id_pendingtrans = ANY($1)', [templist])
