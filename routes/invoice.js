@@ -124,7 +124,7 @@ router.post('/api/v1/invoices', (httprequest, httpresponse) => {
           .then(result => {
               if (result.rowCount > 0) {
                   result.rows.forEach(ele => {
-                      let invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_no);
+                      let invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_status,ele.invoice_no);
                       results.push(invoice);
                   });
               }
