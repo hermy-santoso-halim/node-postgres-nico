@@ -55,8 +55,8 @@ router.post('/api/v1/confirminvoice', (httprequest, httpresponse) => {
   let paramBody = httprequest.body;
   var date = new Date();
 
-  let invoice = new invoiceModel(paramBody.created_by, date,paramBody.pendTrxIds,
-    paramBody.desc, paramBody.noRek, paramBody.bankRek, paramBody.namaRek);
+  let invoice = new invoiceModel(paramBody.creator, paramBody.tgl ,paramBody.list_pending,
+    paramBody.notes_payment, paramBody.no_rek, paramBody.bank_rek, paramBody.nama_rek);
 
     let statusUpdate ={};
   if (paramBody.action == "APR"){
@@ -70,7 +70,7 @@ router.post('/api/v1/confirminvoice', (httprequest, httpresponse) => {
   pool.connect().then(client => {
     client.query('update invoice_header set invoice_status =$1 where invoice_no = $2',[statusUpdate.invoice,invoice.invoice_no])
     .then(result => {
-      let templist=invoice.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
+      let templist=paramBody.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
       client.query('update pending_transaksi set status_transaksi =$1 where id_pendingtrans = ANY ($2)',[statusUpdate.pendtrx, templist])
       .then(resultUpdate =>{
         if (paramBody.action == "APR"){
