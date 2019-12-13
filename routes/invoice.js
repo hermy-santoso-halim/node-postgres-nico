@@ -58,18 +58,29 @@ router.post('/api/v1/confirminvoice', (httprequest, httpresponse) => {
   let invoice = new invoiceModel(paramBody.created_by, date,paramBody.pendTrxIds,
     paramBody.desc, paramBody.noRek, paramBody.bankRek, paramBody.namaRek);
 
+    let statusUpdate ={};
+  if (paramBody.action == "APR"){
+    statusUpdate.invoice = "COMPLETE";
+    statusUpdate.pendtrx = "COMPLETE";
+  } else {
+    statusUpdate.invoice = "REJECT";
+    statusUpdate.pendtrx = "PENDING";
+  }
+
   pool.connect().then(client => {
-    client.query('update invoice_header set invoice_status =\'COMPLETE\' where invoice_no = $1',[invoice.invoice_no])
+    client.query('update invoice_header set invoice_status =$1 where invoice_no = $2',[statusUpdate.invoice,invoice.invoice_no])
     .then(result => {
       let templist=invoice.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
-      client.query('update pending_transaksi set status_transaksi =\'COMPLETE\' where id_pendingtrans = ANY ($1)',[templist])
+      client.query('update pending_transaksi set status_transaksi =$1 where id_pendingtrans = ANY ($2)',[statusUpdate.pendtrx, templist])
       .then(resultUpdate =>{
+        if (paramBody.action == "APR"){
         paramBody.listPendingTrxs.forEach(element => {
           let transaksi = new TransModel(element.tgl, element.keterangan, element.jmlh,element.kode_transaksi);
           client.query('insert into transaksi ("tanggal","jumlah", "keterangan","kode_transaksi") values ($1,$2,$3,$4)',
               [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan, transaksi.kode_transaksi])
               .then(result => { console.log('success insert trx') }).catch(err => {console.log('failed insert trx'); console.log(err) });
         });
+      }
         httpresponse.status(200);
         httpresponse.json({success:true, returnId:returnId});
       })
