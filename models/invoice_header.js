@@ -1,6 +1,6 @@
 class invoice_header {
     
-    constructor(creator, tgl, list_pending, notes_payment, no_rek,bank_rek, nama_rek,invoice_no) {
+    constructor(creator, tgl, list_pending, notes_payment, no_rek,bank_rek, nama_rek,invoice_status,invoice_no) {
         this.invoice_no = invoice_no;
         this.creator = creator;
         this.tgl = tgl;
@@ -9,6 +9,7 @@ class invoice_header {
         this.no_rek = no_rek;
         this.bank_rek = bank_rek;
         this.nama_rek = nama_rek;
+        this.invoice_status = invoice_status;
 
     }
 }

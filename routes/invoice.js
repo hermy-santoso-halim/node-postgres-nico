@@ -3,6 +3,7 @@ var cors = require('cors');
 var router = express.Router();
 var invoiceModel = require('../models/invoice_header');
 var PendingTransModel = require('../models/pending_transaksi');
+var TransModel = require('../models/transaksi');
 
 const { Pool } = require('pg')
 
@@ -26,12 +27,49 @@ router.post('/api/v1/invoice', (httprequest, httpresponse) => {
     paramBody.desc, paramBody.noRek, paramBody.bankRek, paramBody.namaRek);
 
   pool.connect().then(client => {
-    client.query('insert into invoice_header ("creator","tgl", "list_pending", "notes_payment","no_rek","bank_rek","nama_rek") values ($1,$2,$3,$4,$5,$6,$7) returning invoice_no',
-    [invoice.creator,invoice.tgl,invoice.list_pending, invoice.notes_payment,invoice.no_rek, invoice.bank_rek,invoice.nama_rek])
+    client.query('insert into invoice_header ("creator","tgl", "list_pending", "notes_payment","no_rek","bank_rek","nama_rek","invoice_status") values ($1,$2,$3,$4,$5,$6,$7,$8) returning invoice_no',
+    [invoice.creator,invoice.tgl,invoice.list_pending, invoice.notes_payment,invoice.no_rek, invoice.bank_rek,invoice.nama_rek,"CREATED"])
     .then(result => {
       let returnId =result.rows[0].invoice_no;
       client.query('update pending_transaksi set status_transaksi =\'PROCESSED\' where id_pendingtrans = ANY ($1)',[invoice.list_pending])
       .then(resultUpdate =>{
+        httpresponse.status(200);
+        httpresponse.json({success:true, returnId:returnId});
+      })
+      .catch(errorUpdate => {
+        console.log(errorUpdate.stack)
+        httpresponse.status(500);
+        httpresponse.json({success:false});
+      })
+    })
+    .catch(err => {
+      console.log(err.stack)
+      httpresponse.status(500);
+      httpresponse.json({success:false});
+    });
+  });
+  
+});
+
+router.post('/api/v1/confirminvoice', (httprequest, httpresponse) => {
+  let paramBody = httprequest.body;
+  var date = new Date();
+
+  let invoice = new invoiceModel(paramBody.created_by, date,paramBody.pendTrxIds,
+    paramBody.desc, paramBody.noRek, paramBody.bankRek, paramBody.namaRek);
+
+  pool.connect().then(client => {
+    client.query('update invoice_header set invoice_status =\'COMPLETE\' where invoice_no = $1',[invoice.invoice_no])
+    .then(result => {
+      let templist=invoice.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
+      client.query('update pending_transaksi set status_transaksi =\'COMPLETE\' where id_pendingtrans = ANY ($1)',[templist])
+      .then(resultUpdate =>{
+        paramBody.listPendingTrxs.forEach(element => {
+          let transaksi = new TransModel(element.tgl, element.keterangan, element.jmlh,element.kode_transaksi);
+          client.query('insert into transaksi ("tanggal","jumlah", "keterangan","kode_transaksi") values ($1,$2,$3,$4)',
+              [transaksi.tanggal, transaksi.jumlah, transaksi.keterangan, transaksi.kode_transaksi])
+              .then(result => { console.log('success insert trx') }).catch(err => {console.log('failed insert trx'); console.log(err) });
+        });
         httpresponse.status(200);
         httpresponse.json({success:true, returnId:returnId});
       })
@@ -60,7 +98,7 @@ router.post('/api/v1/invoices', (httprequest, httpresponse) => {
   console.log(paramBody);
 
   pool.connect().then(client => {
-      client.query('SELECT count(invoice_no) FROM invoice_header where invoice_no::varchar(255) like $1',[invoiceNo])
+      client.query('SELECT count(invoice_no) FROM invoice_header where invoice_no::varchar(255) like $1 and invoice_status =\'CREATED\'',[invoiceNo])
           .then(result => {
               totalData = result.rows[0].count;
               if (totalData < paramBody.pageLimit){
@@ -71,7 +109,7 @@ router.post('/api/v1/invoices', (httprequest, httpresponse) => {
               console.log(err.stack)
               console.log();
           });
-      client.query('SELECT * FROM invoice_header where invoice_no::varchar(255) like $1 ORDER BY tgl ASC LIMIT $2 OFFSET $3',[invoiceNo,pageLimit, offset])
+      client.query('SELECT * FROM invoice_header where invoice_no::varchar(255) like $1 and invoice_status =\'CREATED\' ORDER BY tgl ASC LIMIT $2 OFFSET $3',[invoiceNo,pageLimit, offset])
           .then(result => {
               if (result.rowCount > 0) {
                   result.rows.forEach(ele => {
@@ -106,7 +144,6 @@ router.post('/api/v1/getinvoice', (httprequest, httpresponse) => {
                   invoice= new invoiceModel(ele.creator, ele.tgl, ele.list_pending, ele.notes_payment, ele.no_rek, ele.bank_rek, ele.nama_rek,ele.invoice_no);
                   invoice.listPendingTrxs =[];
                   let templist=invoice.list_pending.replace(/\"/g, "").replace(/}/g,"").replace(/{/g,"").split(",");
-                  console.log(templist);
                   client.query('SELECT * FROM pending_transaksi where id_pendingtrans = ANY($1)', [templist])
                   .then(resultBiaya => {
                       if (resultBiaya.rowCount > 0) {

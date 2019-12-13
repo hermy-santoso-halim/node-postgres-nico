@@ -46,7 +46,7 @@ router.get('/api/v1/transaksi/:page/:pageLimit', (httprequest, httpresponse) => 
             client.query('SELECT * FROM transaksi LIMIT $1 OFFSET $2',[pageLimit, offset])
                 .then(result => {
                     result.rows.forEach(ele => {
-                        let transaksi = new TransModel(ele.id_transaksi, ele.tanggal, ele.keterangan, ele.jumlah);
+                        let transaksi = new TransModel(ele.tanggal, ele.keterangan, ele.jumlah,ele.kode_transaksi,ele.id_transaksi);
                         results.push(transaksi);
                         
                     });
