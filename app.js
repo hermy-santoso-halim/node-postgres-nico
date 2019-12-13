@@ -13,6 +13,7 @@ var productRouter = require('./routes/product');
 var pendingtrxRouter = require('./routes/pendingtrx');
 var loginRouter = require('./routes/login');
 var invoiceRouter = require('./routes/invoice');
+var transaksiRouter = require('./routes/transaksi');
 
 var app = express();
 
@@ -34,6 +35,7 @@ app.use('/product', productRouter);
 app.use('/pendingtrx', pendingtrxRouter);
 app.use('/login', loginRouter);
 app.use('/invoice', invoiceRouter);
+app.use('/transaksi', transaksiRouter);
 app.use(session({
 	secret: 'secret',
 	resave: true,
